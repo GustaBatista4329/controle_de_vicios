@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "249003379189",
+    "project_id": "controladorvicios",
+    "storage_bucket": "controladorvicios.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:249003379189:android:a2669de172c5b9d32538bc",
+        "android_client_info": {
+          "package_name": "com.example.controlador_vicios"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "249003379189-hkm06ciq3nbmi2ga0uad01qple642mtc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.controlador_vicios",
+            "certificate_hash": "054a25b4a055bb19389be891265460d151d5b49b"
+          }
+        },
+        {
+          "client_id": "249003379189-hpdb28rosmc2t2ln0aur59q2tohlbvnf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1MFyc6hGv5YnoFzpuYbZNQ5JY-_n7Ly8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "249003379189-hpdb28rosmc2t2ln0aur59q2tohlbvnf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
