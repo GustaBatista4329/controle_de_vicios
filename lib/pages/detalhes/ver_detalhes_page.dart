@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
+import 'adicionar_anotacao_page.dart';
+
 class VerDetalhesPage extends StatefulWidget {
   final Map<String, dynamic> vicio;
   final Map<String, dynamic> dadosUsuario;
@@ -83,7 +85,10 @@ class _VerDetalhesPageState extends State<VerDetalhesPage> {
                     const SizedBox(height: 8),
                     Text(
                       "Última recaída: $ultimaRecaida",
-                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
+                      ),
                     ),
                   ],
                 ),
@@ -101,7 +106,10 @@ class _VerDetalhesPageState extends State<VerDetalhesPage> {
                   children: [
                     Text(
                       "Progresso",
-                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
+                      ),
                     ),
                     SizedBox(height: 10),
                     Row(
@@ -155,7 +163,10 @@ class _VerDetalhesPageState extends State<VerDetalhesPage> {
               Container(
                 height: 200,
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 0,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
@@ -165,7 +176,10 @@ class _VerDetalhesPageState extends State<VerDetalhesPage> {
                   children: [
                     Text(
                       "Histórico de recaídas",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                     Expanded(
                       child: ListView.builder(
@@ -173,8 +187,9 @@ class _VerDetalhesPageState extends State<VerDetalhesPage> {
                         physics: ClampingScrollPhysics(),
                         itemCount: (widget.vicio['recaidas']?.length ?? 0) + 1,
                         itemBuilder: (context, index) {
-                          final int total = widget.vicio['recaidas']?.length ?? 0;
-          
+                          final int total =
+                              widget.vicio['recaidas']?.length ?? 0;
+
                           if (index < total) {
                             final recaida = widget.vicio['recaidas'][index];
                             final data =
@@ -186,7 +201,7 @@ class _VerDetalhesPageState extends State<VerDetalhesPage> {
                                         true)
                                     ? 'Sem descrição'
                                     : recaida['texto'];
-          
+
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 5),
                               child: Row(
@@ -237,7 +252,10 @@ class _VerDetalhesPageState extends State<VerDetalhesPage> {
               Container(
                 height: 200,
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 0,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
@@ -247,26 +265,31 @@ class _VerDetalhesPageState extends State<VerDetalhesPage> {
                   children: [
                     Text(
                       "Anotações pessoais",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                     Expanded(
                       child: ListView.builder(
+                        padding: EdgeInsets.zero,
                         itemCount: (widget.vicio['anotacao'].length) + 1,
                         itemBuilder: (context, index) {
                           final total = widget.vicio['anotacao'].length;
-          
+
                           if (index < total) {
                             final anotacao =
                                 widget
                                     .vicio['anotacao'][index]; // <-- erro estava aqui
-                            final data = (anotacao['data'] as Timestamp).toDate();
+                            final data =
+                                (anotacao['data'] as Timestamp).toDate();
                             final sentimento = anotacao['sentimento'] ?? "";
                             final texto =
                                 (anotacao['texto']?.toString().trim().isEmpty ??
                                         true)
                                     ? 'Sem descrição'
                                     : anotacao['texto'];
-          
+
                             return Padding(
                               padding: EdgeInsets.symmetric(vertical: 5),
                               child: Row(
@@ -276,10 +299,30 @@ class _VerDetalhesPageState extends State<VerDetalhesPage> {
                                     color: appColors.primary,
                                   ),
                                   SizedBox(width: 5),
-                                  Text("${DateFormat('dd/MM/yy').format(data)}:"),
-                                  SizedBox(width: 5,),
-                                  Text(texto, maxLines: 5, overflow: TextOverflow.ellipsis,),
+                                  Text(
+                                    "${DateFormat('dd/MM/yy').format(data)}:",
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    texto,
+                                    maxLines: 5,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ],
+                              ),
+                            );
+                          } else {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 0),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: TextButton(
+                                  onPressed: () => _navegarParaAdicionarAnotacao(widget.vicio),
+                                  child: Text(
+                                    '+ Adicionar nova anotação',
+                                    style: TextStyle(color: appColors.primary),
+                                  ),
+                                ),
                               ),
                             );
                           }
@@ -370,6 +413,30 @@ class _VerDetalhesPageState extends State<VerDetalhesPage> {
       ),
     );
   }
+
+  void _navegarParaAdicionarAnotacao(Map<String, dynamic> vicio) async {
+    await Navigator.push(
+      context,
+      PageRouteBuilder(
+        transitionDuration: Duration(milliseconds: 500),
+        pageBuilder:
+            (contex, animation, secondaryAnimation) => AdicionarAnotacaoPage(
+          vicio: vicio,
+          dadosUsuario: widget.dadosUsuario,
+        ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1.0, 0.0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: FadeTransition(opacity: animation, child: child),
+          );
+        },
+      ),
+    );
+  }
+
 
   double calcularTamanhoFonte(String texto) {
     if (texto.length <= 15) return 25;

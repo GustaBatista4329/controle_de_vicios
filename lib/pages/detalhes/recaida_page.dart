@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -129,35 +128,35 @@ class _RecaidaPageState extends State<RecaidaPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children:
-                    emojis.map((emoji) {
-                      final selecionado = _emojiSelecionado == emoji;
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _emojiSelecionado = emoji;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color:
-                                  selecionado
-                                      ? Colors.blue
-                                      : Colors.transparent,
-                              width: 2,
-                            ),
-                          ),
-                          child: Text(
-                            emoji,
-                            style: const TextStyle(
-                              fontSize: 24,
-                            ), // reduzido para caber melhor
-                          ),
+                emojis.map((emoji) {
+                  final selecionado = _emojiSelecionado == emoji;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _emojiSelecionado = emoji;
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color:
+                          selecionado
+                              ? Colors.blue
+                              : Colors.transparent,
+                          width: 2,
                         ),
-                      );
-                    }).toList(),
+                      ),
+                      child: Text(
+                        emoji,
+                        style: const TextStyle(
+                          fontSize: 24,
+                        ), // reduzido para caber melhor
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -184,7 +183,10 @@ class _RecaidaPageState extends State<RecaidaPage> {
               SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.07,
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .height * 0.07,
                 child: ElevatedButton(
                   onPressed: () => _registrarRecaida(recaidasTotal),
                   style: ElevatedButton.styleFrom(
@@ -222,41 +224,86 @@ class _RecaidaPageState extends State<RecaidaPage> {
 
   Future<void> _registrarRecaida(int recaidasTotal) async {
     final texto = recaidaController.text.trim();
-    recaidasTotal = recaidasTotal + 1;
+    final uid = widget.dadosUsuario['uid'];
+    final vicioId = widget.vicio['id'];
 
-    await FirebaseFirestore.instance
-        .collection('usuarios')
-        .doc(widget.dadosUsuario['uid'])
-        .collection('vicios')
-        .doc(widget.vicio['id'])
-        .update({
-      'recaidas': FieldValue.arrayUnion([
-        {
-          'texto': texto,
-          'sentimento': _emojiSelecionado,
-          'data_inicio_abstinencia': widget.vicio['data_inicio'],
-          'data_fim_abstinencia': dataSelecionada,
-        },
-      ]),
-      'meta': '${int.parse(metaController.text)}',
-      'data_inicio_abstinencia': dataSelecionada, // 👈 ADICIONE ISTO!
-    });
+    final userRef = FirebaseFirestore.instance.collection('usuarios').doc(uid);
+    final vicioRef = userRef.collection('vicios').doc(vicioId);
 
-    await FirebaseFirestore.instance.collection('usuarios').doc(widget.dadosUsuario['uid']).update({
-      'recaidas_total': recaidasTotal,
-    });
+    try {
+      // Verifica se o documento do vício existe
+      final vicioSnapshot = await vicioRef.get();
 
+      if (!vicioSnapshot.exists) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("O vício não existe mais. Por favor, tente novamente."),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Recaída adicionada. Boa sorte!"),
-        backgroundColor: Colors.red,
-      ),
-    );
+      // Buscar quantidade atual de recaídas
+      final snapshot = await userRef.get();
+      int atual = snapshot.data()?['recaidas_total'] ?? 0;
+      atual++;
 
-    Navigator.of(context).pop();
-    recaidaController.clear();
-    metaController.clear();
-    _emojiSelecionado = null;
+      // Validação da meta
+      int? novaMeta;
+      if (metaController.text.trim().isNotEmpty) {
+        try {
+          novaMeta = int.parse(metaController.text.trim());
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Meta inválida. Digite um número."),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          return;
+        }
+      }
+
+      // Atualiza o vício com a nova recaída
+      await vicioRef.set({
+        'recaidas': FieldValue.arrayUnion([
+          {
+            'id': DateTime.now().millisecondsSinceEpoch.toString(),
+            'texto': texto,
+            'sentimento': _emojiSelecionado,
+            'data_inicio_abstinencia': widget.vicio['data_inicio'],
+            'data_fim_abstinencia': dataSelecionada,
+          },
+        ]),
+        'meta': novaMeta,
+        'data_inicio_abstinencia': dataSelecionada,
+      }, SetOptions(merge: true));
+
+      // Atualiza contagem total
+      await userRef.update({
+        'recaidas_total': atual,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Recaída adicionada. Boa sorte!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+      Navigator.of(context).pop();
+      recaidaController.clear();
+      metaController.clear();
+      _emojiSelecionado = null;
+    } catch (e) {
+      print('Erro ao registrar recaída: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Erro ao registrar recaída. Tente novamente."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

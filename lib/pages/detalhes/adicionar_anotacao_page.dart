@@ -123,34 +123,6 @@ class _AdicionarAnotacaoPageState extends State<AdicionarAnotacaoPage> {
               ),
             ),
             SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: emojis.map((emoji) {
-              final selecionado = emojiSelecionado == emoji;
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    emojiSelecionado = emoji;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: selecionado ? Colors.blue : Colors.transparent,
-                      width: 2,
-                    ),
-                  ),
-                  child: Text(
-                    emoji,
-                    style: const TextStyle(fontSize: 24), // reduzido para caber melhor
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-            SizedBox(height: 20),
             TextFormField(
               controller: anotacaoController,
               maxLines: 8,
@@ -167,6 +139,41 @@ class _AdicionarAnotacaoPageState extends State<AdicionarAnotacaoPage> {
                 filled: true,
                 fillColor: Colors.grey[100],
               ),
+            ),
+            SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Como vc estava se sentindo?',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: emojis.map((emoji) {
+                final selecionado = emojiSelecionado == emoji;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      emojiSelecionado = emoji;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: selecionado ? Colors.blue : Colors.transparent,
+                        width: 2,
+                      ),
+                    ),
+                    child: Text(
+                      emoji,
+                      style: const TextStyle(fontSize: 24), // reduzido para caber melhor
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
             SizedBox(height: 20),
             ElevatedButton(

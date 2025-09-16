@@ -24,7 +24,6 @@ Future<User?> cadastrarUsuarioCompleto({
       'nome': nome,
       'sobrenome': sobrenome,
       'email': email,
-      'foto_url': '',
       'dias_limpos_geral': [],
       'data_cadastro': Timestamp.now(),
     });

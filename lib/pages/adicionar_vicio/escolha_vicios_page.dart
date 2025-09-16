@@ -1,4 +1,3 @@
-import 'package:controlador_vicios/components/components.dart';
 import 'package:flutter/material.dart';
 
 import 'adicionar_vicio_page.dart';
