@@ -1,16 +1,14 @@
 # controlador_vicios
 
-A new Flutter project.
+# Sobre o Projeto
 
-## Getting Started
+Este projeto foi desenvolvido com o propósito de apoiar pessoas que enfrentam algum tipo de dependência.
+Embora eu não possa oferecer uma solução completa, busquei criar uma ferramenta que ajude no acompanhamento da jornada contra o vício.
 
-This project is a starting point for a Flutter application.
+Com o aplicativo, o usuário pode:
 
-A few resources to get you started if this is your first Flutter project:
+    - Registrar recaídas;
+    - Adicionar anotações sobre como está se sentindo ao longo do processo;
+    - Acompanhar a evolução do seu caminho de recuperação.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+A ideia é fornecer um espaço simples e acolhedor, que ajude a pessoa a refletir sobre seu progresso e manter o foco em sua superação.
